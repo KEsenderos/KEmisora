@@ -11,8 +11,9 @@ const Drive = {
     try {
       const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(Object.assign({ key: key, action: action }, params || {})) });
-      j = await res.json();
-    } catch (e) { throw new KemError('NETWORK'); }
+      const txt = await res.text();
+      try { j = JSON.parse(txt); } catch (e2) { throw new KemError('BAD_RESPONSE'); }   // 通信は届いたが、JSONでない（GASの公開設定・URLの間違いが多い）
+    } catch (e) { if (e instanceof KemError) throw e; throw new KemError('NETWORK'); }
     if (!j || !j.ok) throw new KemError((j && j.code) || 'UNKNOWN', j || {});
     return j;
   },
