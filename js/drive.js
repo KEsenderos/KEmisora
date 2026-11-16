@@ -1,4 +1,4 @@
-// KEmisora  drive.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// KEmisora  drive.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
 // 役割：中継（GAS）との通信。GETは使わず、合言葉つきのPOSTだけ。
 
 const Drive = {
@@ -35,6 +35,8 @@ const Drive = {
     return new Blob(chunks, { type: type });
   },
 
-  getSync() { return Drive.call('sync'); },
-  putSync(data, baseSavedAt) { return Drive.call('putSync', { data: data, baseSavedAt: baseSavedAt }); }
+  // 同期ファイルの置き場所（設定で指定。空なら親フォルダ）
+  syncFolderId_() { return Util.lsGet(KEM.LS.SYNC_FOLDER) || ''; },
+  getSync() { return Drive.call('sync', { syncFolderId: Drive.syncFolderId_() }); },
+  putSync(data, baseSavedAt) { return Drive.call('putSync', { data: data, baseSavedAt: baseSavedAt, syncFolderId: Drive.syncFolderId_() }); }
 };

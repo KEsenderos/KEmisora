@@ -1,4 +1,4 @@
-// KEmisora  sync.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// KEmisora  sync.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
 // 役割：属性・編成・曲ごとの設定（属性のON/OFF・音程・速度）を、ドライブの同期ファイルを通して端末間でそろえる。
 //       統合の計算は KeCore.mergeDocs（試験済み）。再生中は行わない。
 

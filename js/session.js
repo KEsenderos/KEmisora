@@ -1,4 +1,4 @@
-// KEmisora  session.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// KEmisora  session.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
 // 役割：編成から「再生する曲の順番」を決める（計算だけ。画面にも保存にも触れない）。
 
 const Session = {

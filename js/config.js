@@ -1,8 +1,8 @@
-// KEmisora  config.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// KEmisora  config.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
 // 役割：定数 KEM と表示文言 TEXT、エラーの種類 KemError。画面に出る文字はすべてここに置く。
 
 const KEM = {
-  APP_VERSION: '0.1.1',
+  APP_VERSION: '0.1.2',
   PITCH_MIN: -3, PITCH_MAX: 3, PITCH_STEP: 1, PITCH_DEFAULT: 0,
   SPEED_MIN: 0.5, SPEED_MAX: 1.5, SPEED_STEP: 0.05, SPEED_DEFAULT: 1.0,
   LIBRARY_MAX: 300,
@@ -19,7 +19,7 @@ const KEM = {
   UPDATE_CHECK_INTERVAL_MS: 10 * 60 * 1000,
   SYNC_FOREGROUND_MIN: 5, SYNC_AFTER_CHANGE_MS: 5000, SYNC_KEEP_DAYS: 180, SYNC_VANISH_WARN: 10,
   BACKUP_WARN_DAYS: 14,
-  ROW_H: 52, NAME_COL_W: 150, TAG_COL_W: 64,
+  ROW_H: 52, NAME_COL_W: 196, TAG_COL_W: 64,
   ALLOWED_EXT: ['mp3', 'm4a'],
   DB_NAME: 'kemisora', DB_VERSION: 1,
   STATE: { EMPTY: 'empty', LOADING: 'loading', STOPPED: 'stopped', PLAYING: 'playing', PAUSED: 'paused' },
@@ -32,7 +32,8 @@ const KEM = {
     LAST_PLAN: 'kem_lastPlanId', GAS_URL: 'kem_gasUrl', KEY: 'kem_accessKey',
     PARENT_URL: 'kem_parentUrl', LAST_CHILD: 'kem_lastChildId', LAST_SYNC: 'kem_lastSyncAt',
     LAST_BACKUP: 'kem_lastBackupAt', PERSIST_ASKED: 'kem_persistAsked', LOADING: 'kem_loadingSongId',
-    BASE_SAVED: 'kem_syncBaseSavedAt'
+    BASE_SAVED: 'kem_syncBaseSavedAt',
+    SYNC_FOLDER: 'kem_syncFolderId', SYNC_FOLDER_URL: 'kem_syncFolderUrl'
   }
 };
 
@@ -41,7 +42,7 @@ const TEXT = {
   VERSION: '版 {v}',
   TAB_PLAY: '再生', TAB_PLAN: '編成', TAB_SONG: '曲', TAB_SET: '設定',
   BTN_PLAY: '再生', BTN_PAUSE: '一時停止', BTN_STOP: '停止', BTN_NEXT: '次の曲', BTN_PREV: '前の曲',
-  BTN_RESET: '元に戻す', BTN_DELETE: '削除', BTN_DELETE_CONFIRM: 'もう一度押すと削除',
+  BTN_RESET: '元に戻す', BTN_DELETE: '削除', BTN_DELETE_CONFIRM: 'もう一度押すと削除', BTN_DELETE_CONFIRM_SHORT: '削除？',
   BTN_ADD: '追加', BTN_SAVE: '保存', BTN_CANCEL: 'やめる', BTN_EDIT: '直す', BTN_UP: '上へ', BTN_DOWN: '下へ',
   LABEL_PITCH: '音程', LABEL_SPEED: '速度',
   PLAN_NONE: '編成がありません。「編成」タブで作ってください',
@@ -91,6 +92,9 @@ const TEXT = {
   INFO_BACKUP_OUT: 'バックアップを書き出しました',
   INFO_BACKUP_IN: 'バックアップを読み込みました',
   INFO_PLAN_SAVED: '編成を保存しました',
+  SET_SYNC_PLACE: '同期ファイルの置き場所（フォルダのURL。空欄＝親フォルダ）', BTN_SYNC_PLACE: '置き場所を保存',
+  INFO_SYNC_PLACE_SET: '同期ファイルの置き場所を保存しました：', INFO_SYNC_PLACE_PARENT: '同期ファイルの置き場所は親フォルダです',
+  LEGEND_SONGS: '色：黄＝属性が未設定／紫＝属性が2つ　（新しく取り込んだ曲が上）',
   INFO_ADDED: '{n}曲を追加しました',
   INFO_PICK_SHORT: '条件に合う曲が{n}曲だけでした',
   INFO_OUT_OF_RANGE: '指定した時間の範囲に収まらない見込みです（最も近い曲順にしました）',

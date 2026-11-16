@@ -1,4 +1,4 @@
-// KEmisora  driveimport.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// KEmisora  driveimport.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
 // 役割：選んだ子フォルダの曲を、ドライブから取り込む。すでにある曲は飛ばす。
 
 const DriveImport = {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- KEmisora  index.html  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md -->
+<!-- KEmisora  index.html  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md -->
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -75,6 +75,7 @@
   <!-- 曲 -->
   <section id="tab-song" class="tab" data-tab="song" hidden>
     <div class="list-head"><h2 id="songTitle" class="h2"></h2><button id="btnImport" class="btn-add" type="button"></button></div>
+    <p id="songLegend" class="legend"></p>
     <div id="importPanel" class="card" hidden></div>
     <p id="gridHint" class="hint"></p>
     <div id="gridWrap" class="grid-wrap"><div id="gridInner" class="grid-inner"></div></div>
@@ -91,6 +92,8 @@
       <button id="btnConn" class="btn-main" type="button"></button>
       <label class="lbl" id="lblParent" for="parentUrl"></label><input id="parentUrl" class="text" type="url" autocomplete="off" autocapitalize="off">
       <button id="btnParent" class="btn-main" type="button"></button>
+      <label class="lbl" id="lblSyncPlace" for="syncUrl"></label><input id="syncUrl" class="text" type="url" autocomplete="off" autocapitalize="off">
+      <button id="btnSyncPlace" class="btn-main" type="button"></button>
       <div id="connState" class="hint"></div></div>
     <div class="card"><h2 id="syncTitle" class="h2"></h2><div id="syncState" class="hint"></div><button id="btnSync" class="btn-main" type="button"></button></div>
     <div class="card"><h2 id="backupTitle" class="h2"></h2><div id="backupState" class="hint"></div>

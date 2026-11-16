@@ -1,4 +1,4 @@
-// KEmisora  ui.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// KEmisora  ui.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
 // 役割：画面の表示とボタンの受付（4つのタブ：再生・編成・曲・設定）。
 
 const UI = {
@@ -31,7 +31,8 @@ const UI = {
     $('syncTitle').textContent = TEXT.SET_SYNC; $('btnSync').textContent = TEXT.BTN_SYNC;
     $('backupTitle').textContent = TEXT.SET_BACKUP; $('btnExport').textContent = TEXT.BTN_EXPORT; $('btnImportFile').textContent = TEXT.BTN_IMPORT_FILE;
     $('storageTitle').textContent = TEXT.SET_STORAGE;
-    $('gasUrl').value = Util.lsGet(KEM.LS.GAS_URL) || ''; $('accessKey').value = Util.lsGet(KEM.LS.KEY) || ''; $('parentUrl').value = Util.lsGet(KEM.LS.PARENT_URL) || '';
+    $('gasUrl').value = Util.lsGet(KEM.LS.GAS_URL) || ''; $('accessKey').value = Util.lsGet(KEM.LS.KEY) || ''; $('parentUrl').value = Util.lsGet(KEM.LS.PARENT_URL) || ''; $('syncUrl').value = Util.lsGet(KEM.LS.SYNC_FOLDER_URL) || '';
+    $('songLegend').textContent = TEXT.LEGEND_SONGS; $('lblSyncPlace').textContent = TEXT.SET_SYNC_PLACE; $('btnSyncPlace').textContent = TEXT.BTN_SYNC_PLACE;
     document.querySelectorAll('.tab-btn').forEach((b) => {
       b.textContent = { play: TEXT.TAB_PLAY, plan: TEXT.TAB_PLAN, song: TEXT.TAB_SONG, set: TEXT.TAB_SET }[b.dataset.tab];
       b.addEventListener('click', () => UI.showTab(b.dataset.tab));
@@ -264,10 +265,25 @@ const UI = {
     UI.$('btnImport').addEventListener('click', () => UI.toggleImport_());
     UI.$('gridWrap').addEventListener('scroll', () => UI.scheduleGrid_());
     UI.$('gridInner').addEventListener('click', (e) => {
-      const c = e.target.closest('[data-cell]'), n = e.target.closest('[data-play]');
+      const c = e.target.closest('[data-cell]'), n = e.target.closest('[data-play]'), d = e.target.closest('[data-del]');
       if (c) { const [sid, tid] = c.dataset.cell.split('\u0001'); UI.guard_(async () => { await Library.toggleTag(sid, tid); UI.renderGridRows_(); }); }
+      else if (d) UI.deleteSong_(d);
       else if (n) { UI.hideMessage(); UI.guard_(() => Player.playOne(n.dataset.play).then(() => UI.showTab('play'))); }
     });
+  },
+
+  // 曲を端末から削除（2回押し。ドライブのファイルは消えない。再生中は不可）
+  deleteSong_(btn) {
+    const st = Player.state;
+    if (st === KEM.STATE.PLAYING || st === KEM.STATE.PAUSED || st === KEM.STATE.LOADING) { UI.showMessage(TEXT.BUSY_HINT, 'error'); return; }
+    const id = btn.dataset.del, key = 'song' + id;
+    if (UI.delArm_[key]) {
+      clearTimeout(UI.delArm_[key]); delete UI.delArm_[key];
+      UI.guard_(async () => { await Library.remove(id); UI.renderSongs(); UI.showMessage(TEXT.INFO_SONG_DELETED, 'info'); });
+      return;
+    }
+    btn.classList.add('armed'); btn.textContent = TEXT.BTN_DELETE_CONFIRM_SHORT;
+    UI.delArm_[key] = setTimeout(() => { delete UI.delArm_[key]; btn.classList.remove('armed'); btn.textContent = '🗑'; }, KEM.DELETE_CONFIRM_MS);
   },
 
   async toggleImport_() {
@@ -336,8 +352,12 @@ const UI = {
     const W = UI.gridW_;
     for (let i = a; i < b; i++) {
       const s = songs[i];
-      const row = UI.h('div', { class: 'g-row', style: 'top:' + (i * KEM.ROW_H) + 'px;width:' + W + 'px' });
-      row.appendChild(UI.h('button', { class: 'g-name', type: 'button', style: 'width:' + KEM.NAME_COL_W + 'px', 'data-play': s.songId }, [UI.h('span', { text: Util.stripExt(s.name) })]));
+      const nTags = tags.filter((t) => s.tagIds.indexOf(t.tagId) >= 0).length;
+      const row = UI.h('div', { class: 'g-row' + (nTags === 0 ? ' unset' : nTags === 2 ? ' two' : ''), style: 'top:' + (i * KEM.ROW_H) + 'px;width:' + W + 'px' });
+      const armed = !!UI.delArm_['song' + s.songId];
+      row.appendChild(UI.h('div', { class: 'g-name', style: 'width:' + KEM.NAME_COL_W + 'px' }, [
+        UI.h('button', { class: 'g-play', type: 'button', 'data-play': s.songId }, [UI.h('span', { text: Util.stripExt(s.name) })]),
+        UI.h('button', { class: 'g-del' + (armed ? ' armed' : ''), type: 'button', 'data-del': s.songId, 'aria-label': TEXT.BTN_DELETE_SONG, text: armed ? TEXT.BTN_DELETE_CONFIRM_SHORT : '🗑' })]));
       tags.forEach((t) => {
         const on = s.tagIds.indexOf(t.tagId) >= 0;
         row.appendChild(UI.h('button', { class: 'g-cell ' + (on ? 'on' : 'off'), type: 'button', style: 'width:' + KEM.TAG_COL_W + 'px', 'data-cell': s.songId + '\u0001' + t.tagId, 'aria-pressed': on ? 'true' : 'false', text: on ? '✓' : '' }));
@@ -363,6 +383,15 @@ const UI = {
       Util.lsSet(KEM.LS.PARENT_URL, $('parentUrl').value.trim());
       UI.$('connState').textContent = TEXT.INFO_PARENT_SET + '：' + (r.parentName || '');
     }));
+    $('btnSyncPlace').addEventListener('click', () => UI.guard_(async () => {
+      const raw = $('syncUrl').value.trim();
+      if (!raw) { Util.lsRemove(KEM.LS.SYNC_FOLDER); Util.lsRemove(KEM.LS.SYNC_FOLDER_URL); UI.showMessage(TEXT.INFO_SYNC_PLACE_PARENT, 'info'); return; }
+      const id = Util.folderIdFromUrl(raw);
+      if (!id) throw new KemError('BAD_URL');
+      Util.lsSet(KEM.LS.SYNC_FOLDER, id); Util.lsSet(KEM.LS.SYNC_FOLDER_URL, raw);
+      try { await Drive.getSync(); } catch (e) { Util.lsRemove(KEM.LS.SYNC_FOLDER); Util.lsRemove(KEM.LS.SYNC_FOLDER_URL); throw e; }   // 使えない場所なら保存しない
+      UI.showMessage(TEXT.INFO_SYNC_PLACE_SET + raw.slice(0, 40), 'info');
+    }));
     $('btnSync').addEventListener('click', () => UI.guard_(async () => { await Sync.run(true); UI.showMessage(TEXT.INFO_SYNCED, 'info'); UI.renderSettings(); }));
     $('btnExport').addEventListener('click', () => UI.guard_(async () => { await Backup.download(); UI.showMessage(TEXT.INFO_BACKUP_OUT, 'info'); UI.renderSettings(); }));
     $('btnImportFile').addEventListener('click', () => $('backupFile').click());
@@ -378,12 +407,17 @@ const UI = {
     UI.$('tagTitle').textContent = Util.fill(TEXT.TAGS_TITLE, { n: tags.length, max: KEM.TAG_MAX });
     list.textContent = '';
     if (!tags.length) list.appendChild(UI.h('p', { class: 'hint', text: TEXT.TAGS_EMPTY }));
-    tags.forEach((t) => {
+    tags.forEach((t, i) => {
+      const up = UI.h('button', { class: 'btn-ghost', type: 'button', 'aria-label': TEXT.BTN_UP, text: '▲' });
+      const dn = UI.h('button', { class: 'btn-ghost', type: 'button', 'aria-label': TEXT.BTN_DOWN, text: '▼' });
+      up.disabled = i === 0; dn.disabled = i === tags.length - 1;
+      up.addEventListener('click', () => UI.guard_(async () => { await Tags.move(t.tagId, -1); UI.pickKey_ = null; UI.renderSettings(); }));
+      dn.addEventListener('click', () => UI.guard_(async () => { await Tags.move(t.tagId, 1); UI.pickKey_ = null; UI.renderSettings(); }));
       const ren = UI.h('button', { class: 'btn-ghost', type: 'button', text: TEXT.TAG_RENAME });
       ren.addEventListener('click', () => { const n = window.prompt(TEXT.TAG_RENAME, t.name); if (n != null) UI.guard_(async () => { await Tags.rename(t.tagId, n); UI.renderSettings(); UI.pickKey_ = null; }); });
       const del = UI.h('button', { class: 'btn-del', type: 'button', text: TEXT.BTN_DELETE });
       del.addEventListener('click', () => UI.armDelete_(del, 'tag' + t.tagId, () => UI.guard_(async () => { await Tags.remove(t.tagId); UI.renderSettings(); UI.pickKey_ = null; })));
-      list.appendChild(UI.h('div', { class: 'tag-row' }, [UI.h('span', { class: 'tn', text: t.name }), ren, del]));
+      list.appendChild(UI.h('div', { class: 'tag-row' }, [UI.h('span', { class: 'tn', text: t.name }), up, dn, ren, del]));
     });
     const last = Number(Util.lsGet(KEM.LS.LAST_SYNC) || 0);
     UI.$('syncState').textContent = last ? '最後の同期：' + new Date(last).toLocaleString('ja-JP') : '同期はまだしていません';
