@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- KEmisora  index.html  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0E16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="KEmisora">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+<title>KEmisora</title>
+</head>
+<body>
+<button id="update-btn" class="update-banner" hidden></button>
+<header class="app-header">
+  <div class="app-brand"><img id="appLogo" class="app-logo" src="icons/icon-192.png" alt="" width="32" height="32"><h1 id="appTitle"></h1></div>
+  <span id="appVersion" class="version"></span>
+</header>
+<div id="msgArea" class="msg-area" hidden></div>
+
+<main class="app-main">
+  <!-- 再生 -->
+  <section id="tab-play" class="tab" data-tab="play">
+    <div class="card">
+      <div id="nowTitle" class="now-title"></div>
+      <div id="nowSub" class="now-sub"></div>
+      <input id="seekBar" class="seek-bar" type="range" min="0" max="1000" step="1" value="0">
+      <div class="times"><span id="timeCur">0:00</span><span id="timeTotal">--:--</span></div>
+      <div class="transport">
+        <button id="btnPrev" class="btn-icon" type="button"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM20 6v12L9.5 12z"/></svg></button>
+        <button id="btnBack" class="btn-icon btn-skip" type="button"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg><span class="skip-num">10</span></button>
+        <button id="btnPlay" class="btn-play" type="button"><svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+        <button id="btnFwd" class="btn-icon btn-skip" type="button"><svg viewBox="0 0 24 24"><path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 6 6h2a8 8 0 1 1-8-8z"/></svg><span class="skip-num">10</span></button>
+        <button id="btnNext" class="btn-icon" type="button"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM4 6l10.5 6L4 18z"/></svg></button>
+      </div>
+      <div class="sub-controls">
+        <button id="btnStop" class="btn-sub" type="button"></button>
+        <button id="btnReset" class="btn-sub" type="button"></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="param param-key">
+        <div class="param-row"><span id="pitchLabel" class="param-label"></span>
+          <button id="btnPitchDown" class="btn-step" type="button">−</button>
+          <span id="pitchValue" class="param-value"></span>
+          <button id="btnPitchUp" class="btn-step" type="button">+</button></div>
+        <input id="pitchSlider" class="slider" type="range" min="-3" max="3" step="1" value="0">
+      </div>
+      <div class="param param-speed">
+        <div class="param-row"><span id="speedLabel" class="param-label"></span>
+          <button id="btnSpeedDown" class="btn-step" type="button">−</button>
+          <span id="speedValue" class="param-value"></span>
+          <button id="btnSpeedUp" class="btn-step" type="button">+</button></div>
+        <input id="speedSlider" class="slider" type="range" min="0.5" max="1.5" step="0.05" value="1">
+      </div>
+    </div>
+    <div class="card">
+      <h2 id="planPickTitle" class="h2"></h2>
+      <div id="planPick" class="plan-pick"></div>
+    </div>
+  </section>
+
+  <!-- 編成 -->
+  <section id="tab-plan" class="tab" data-tab="plan" hidden>
+    <div class="list-head"><h2 id="planListTitle" class="h2"></h2><button id="btnPlanNew" class="btn-add" type="button"></button></div>
+    <div id="planList" class="plan-list"></div>
+    <div id="planForm" class="card form" hidden></div>
+  </section>
+
+  <!-- 曲 -->
+  <section id="tab-song" class="tab" data-tab="song" hidden>
+    <div class="list-head"><h2 id="songTitle" class="h2"></h2><button id="btnImport" class="btn-add" type="button"></button></div>
+    <div id="importPanel" class="card" hidden></div>
+    <p id="gridHint" class="hint"></p>
+    <div id="gridWrap" class="grid-wrap"><div id="gridInner" class="grid-inner"></div></div>
+    <p id="songEmpty" class="list-empty" hidden></p>
+  </section>
+
+  <!-- 設定 -->
+  <section id="tab-set" class="tab" data-tab="set" hidden>
+    <div class="card"><h2 id="tagTitle" class="h2"></h2><div id="tagList"></div>
+      <div class="row"><input id="tagNew" class="text" type="text" maxlength="24" autocomplete="off"><button id="btnTagAdd" class="btn-add" type="button"></button></div></div>
+    <div class="card"><h2 id="driveTitle" class="h2"></h2>
+      <label class="lbl" id="lblGas" for="gasUrl"></label><input id="gasUrl" class="text" type="url" autocomplete="off" autocapitalize="off">
+      <label class="lbl" id="lblKey" for="accessKey"></label><input id="accessKey" class="text" type="password" autocomplete="off" autocapitalize="off">
+      <button id="btnConn" class="btn-main" type="button"></button>
+      <label class="lbl" id="lblParent" for="parentUrl"></label><input id="parentUrl" class="text" type="url" autocomplete="off" autocapitalize="off">
+      <button id="btnParent" class="btn-main" type="button"></button>
+      <div id="connState" class="hint"></div></div>
+    <div class="card"><h2 id="syncTitle" class="h2"></h2><div id="syncState" class="hint"></div><button id="btnSync" class="btn-main" type="button"></button></div>
+    <div class="card"><h2 id="backupTitle" class="h2"></h2><div id="backupState" class="hint"></div>
+      <div class="row"><button id="btnExport" class="btn-main" type="button"></button><button id="btnImportFile" class="btn-main" type="button"></button></div>
+      <input id="backupFile" type="file" accept=".json,application/json" hidden></div>
+    <div class="card"><h2 id="storageTitle" class="h2"></h2><div id="storageState" class="hint"></div></div>
+  </section>
+</main>
+
+<nav class="tabbar" id="tabbar">
+  <button type="button" data-tab="play" class="tab-btn on"></button>
+  <button type="button" data-tab="plan" class="tab-btn"></button>
+  <button type="button" data-tab="song" class="tab-btn"></button>
+  <button type="button" data-tab="set" class="tab-btn"></button>
+</nav>
+
+<audio id="kemSilence" playsinline preload="auto"></audio>
+
+<script src="js/config.js"></script>
+<script src="js/util.js"></script>
+<script src="js/kecore.js"></script>
+<script src="js/store.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/media.js"></script>
+<script src="js/library.js"></script>
+<script src="js/tags.js"></script>
+<script src="js/plans.js"></script>
+<script src="js/planner.js"></script>
+<script src="js/drive.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/driveimport.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/session.js"></script>
+<script src="js/player.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

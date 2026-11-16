@@ -1,0 +1,39 @@
+// KEmisora  drive.js  版 0.1.1  基づく仕様書：KEmisora_仕様書_v0.1.1.md
+// 役割：中継（GAS）との通信。GETは使わず、合言葉つきのPOSTだけ。
+
+const Drive = {
+  configured() { return !!(Util.lsGet(KEM.LS.GAS_URL) && Util.lsGet(KEM.LS.KEY)); },
+
+  async call(action, params) {
+    const url = Util.lsGet(KEM.LS.GAS_URL), key = Util.lsGet(KEM.LS.KEY);
+    if (!url || !key) throw new KemError('NEED_CONN');
+    let j;
+    try {
+      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(Object.assign({ key: key, action: action }, params || {})) });
+      j = await res.json();
+    } catch (e) { throw new KemError('NETWORK'); }
+    if (!j || !j.ok) throw new KemError((j && j.code) || 'UNKNOWN', j || {});
+    return j;
+  },
+
+  status() { return Drive.call('status'); },
+  setParent(folderId) { return Drive.call('setParent', { folderId }); },
+  children() { return Drive.call('children'); },
+  list(folderId) { return Drive.call('list', { folderId }); },
+
+  // 曲を4MBずつ受け取ってつなぐ。onPart(進んだ数, 全部の数)
+  async audio(fileId, type, onPart) {
+    const chunks = []; let parts = 1;
+    for (let p = 0; p < parts; p++) {
+      const r = await Drive.call('audio', { fileId, part: p });
+      parts = r.parts;
+      chunks.push(Util.b64ToBytes(r.data));
+      if (onPart) onPart(p + 1, parts);
+    }
+    return new Blob(chunks, { type: type });
+  },
+
+  getSync() { return Drive.call('sync'); },
+  putSync(data, baseSavedAt) { return Drive.call('putSync', { data: data, baseSavedAt: baseSavedAt }); }
+};
