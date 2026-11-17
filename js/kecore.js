@@ -1,4 +1,4 @@
-// KEmisora  kecore.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
+// KEmisora  kecore.js  版 0.1.6  基づく仕様書：KEmisora_仕様書_v0.1.6.md
 // 役割：画面にも保存にも通信にも触れない「計算だけ」の部品。Node.jsでそのまま試験できる。
 (function (root) {
   'use strict';

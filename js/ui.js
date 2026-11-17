@@ -1,4 +1,4 @@
-// KEmisora  ui.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
+// KEmisora  ui.js  版 0.1.6  基づく仕様書：KEmisora_仕様書_v0.1.6.md
 // 役割：画面の表示とボタンの受付（4つのタブ：再生・編成・曲・設定）。
 
 const UI = {
@@ -17,7 +17,7 @@ const UI = {
 
   init() {
     const $ = UI.$;
-    $('appTitle').textContent = TEXT.APP_TITLE;
+    { const t = $('appTitle'); t.textContent = ''; const ke = document.createElement('span'); ke.className = 'ke-orange'; ke.textContent = TEXT.APP_TITLE.slice(0, 2); t.appendChild(ke); t.appendChild(document.createTextNode(TEXT.APP_TITLE.slice(2))); }   // 「KE」はいつもオレンジ
     $('appVersion').textContent = Util.fill(TEXT.VERSION, { v: KEM.APP_VERSION });
     $('update-btn').textContent = TEXT.UPDATE_BANNER;
     $('btnStop').textContent = TEXT.BTN_STOP; $('btnReset').textContent = TEXT.BTN_RESET;
