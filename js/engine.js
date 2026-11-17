@@ -1,4 +1,4 @@
-// KEmisora  engine.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  engine.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：AudioContext と AudioWorklet（kem-processor）の管理。曲のデコード、再生、タイマーの切る位置の指示。
 
 const Engine = {

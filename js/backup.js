@@ -1,4 +1,4 @@
-// KEmisora  backup.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  backup.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：属性・編成・曲ごとの設定を、ファイルに書き出す／読み込む。曲のファイルは含めない（ドライブから取り込み直す）。
 
 const Backup = {

@@ -1,8 +1,8 @@
-// KEmisora  config.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  config.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：定数 KEM と表示文言 TEXT、エラーの種類 KemError。画面に出る文字はすべてここに置く。
 
 const KEM = {
-  APP_VERSION: '0.1.4',
+  APP_VERSION: '0.1.5',
   PITCH_MIN: -3, PITCH_MAX: 3, PITCH_STEP: 1, PITCH_DEFAULT: 0,
   SPEED_MIN: 0.5, SPEED_MAX: 1.5, SPEED_STEP: 0.05, SPEED_DEFAULT: 1.0,
   LIBRARY_MAX: 300,
@@ -50,16 +50,17 @@ const TEXT = {
   PLAN_NONE: '編成がありません。「編成」タブで作ってください',
   PLAN_PICK: '編成を選ぶ',
   NOW_NONE: '再生していません', NOW_LOADING: '読み込み中…', NOW_ALARM: '⏰ {name}',
-  TIMER_LEFT: 'タイマー 残り {t}',
+  TIMER_LEFT: '目覚まし 残り {t}',
+  STOP_POP_ALARM: '時間です', STOP_POP_LAST: 'ラストの曲です', BTN_STOP_BIG: '■ 停止',
   TIMER_DONE: '時間になりました',
   PLAN_END: '最後まで再生しました',
-  METHOD_NAME: { ALL: '全曲', PICK: '指定数', REPEAT: 'くり返し', TIME: '時間', TIMER: 'タイマー' },
+  METHOD_NAME: { ALL: '全曲', PICK: '指定数', REPEAT: 'くり返し', TIME: 'タイマー', TIMER: '目覚まし' },
   METHOD_HELP: {
     ALL: '条件に合う曲を1回ずつ、ランダムな順に再生します',
     PICK: '条件に合う曲から、指定した数だけランダムに選んで再生します',
     REPEAT: '条件に合う曲を、ランダムな順で何周でも再生します',
-    TIME: '指定した時間に近くなるように曲を組み、最後の曲で終わります',
-    TIMER: '指定した時間（または終了時刻）ちょうどに、曲の途中でも音を小さくしてアラームに切り替えます'
+    TIME: '指定した時間（分）に近くなるように曲を組み、最後の曲で終わります',
+    TIMER: '指定した時刻ちょうどに、曲の途中でも音を小さくして、アラーム曲に切り替えます（時刻アラーム）'
   },
   MATCH_ANY: 'どれか1つ', MATCH_ALL: 'すべて',
   TAGS_ALL_SONGS: '属性を選ばない（全曲）',
@@ -70,7 +71,7 @@ const TEXT = {
   BAD_NO_SONG: '条件に合う曲がありません',
   BAD_LAST_MISSING: '最後の曲の条件に合う曲がありません',
   BAD_ALARM_NONE: 'アラームの曲がありません',
-  BAD_RANGE: '数字が範囲外です',
+  BAD_RANGE: '数字・時刻が範囲外です',
   FORM_NAME: '名前（{n}文字まで）', FORM_METHOD: '再生のしかた', FORM_TAGS: '再生する曲の属性', FORM_MATCH: '属性の合わせ方',
   FORM_COUNT: '曲数', FORM_MIN: '時間（分）', FORM_END: '最後の曲（アラーム）',
   END_NONE: 'なし', END_TAGS: '属性でランダム', END_SONG: '曲を指定',

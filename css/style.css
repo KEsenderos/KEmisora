@@ -1,4 +1,4 @@
-/* KEmisora  style.css  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md */
+/* KEmisora  style.css  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md */
 /* 役割：見た目（暗い画面・青のアクセント）。色は :root の名前つきの色だけを使う */
 
 :root {
@@ -166,3 +166,12 @@ input[type="range"]:disabled { opacity: 0.4; }
 .g-row.two .g-name { background: #3b2766; box-shadow: inset 4px 0 0 #C4A8FF; }
 .g-row.two .g-cell.off { background: #271a47; }
 .legend { margin: 4px 0 8px; font-size: 13px; color: var(--muted); }
+
+/* 終わりの時間が来たときの大きな停止ボタン */
+.stop-pop { position: fixed; inset: 0; z-index: 50; background: rgba(10,14,22,.96); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; }
+.stop-pop[hidden] { display: none; }
+.sp-icon { font-size: 64px; line-height: 1; }
+.sp-title { font-size: 28px; font-weight: 800; color: var(--text); }
+.sp-song { font-size: 16px; color: var(--muted); overflow-wrap: anywhere; max-width: 90%; }
+.sp-btn { width: min(88%, 420px); height: 140px; border: none; border-radius: 24px; background: #EF4444; color: #1a0505; font-size: 36px; font-weight: 800; }
+.sp-btn:active { background: #FCA5A5; }

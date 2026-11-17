@@ -1,4 +1,4 @@
-// KEmisora  ui.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  ui.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：画面の表示とボタンの受付（4つのタブ：再生・編成・曲・設定）。
 
 const UI = {
@@ -39,7 +39,8 @@ const UI = {
     });
     UI.bindPress_();
     UI.bindPlay_(); UI.bindPlan_(); UI.bindSong_(); UI.bindSet_();
-    Player.onChange = () => UI.onPlayerChange_();
+    Player.onChange = () => { UI.updateStopPop_(); UI.onPlayerChange_(); };
+    UI.$('spStop').addEventListener('click', () => { Player.stop(); UI.updateStopPop_(); });
     Player.onMessage = (t, k) => UI.showMessage(t, k);
   },
 
@@ -106,6 +107,21 @@ const UI = {
     seek.addEventListener('change', () => { UI.seeking_ = false; Player.seekTo(Number(seek.value) / 1000 * Player.duration); });
   },
 
+  // 終わりの時間が来たとき（目覚まし＝アラーム曲に切り替わったとき／タイマー＝ラストの曲に入ったとき）、大きな停止ボタンを出す
+  updateStopPop_() {
+    const P = Player, S = KEM.STATE, pop = UI.$('stopPop');
+    let kind = null;
+    if (P.plan && (P.state === S.PLAYING || P.state === S.PAUSED || P.state === S.LOADING)) {
+      if (P.plan.method === KEM.METHOD.TIMER && P.alarmActive) kind = 'alarm';
+      else if (P.plan.method === KEM.METHOD.TIME && P.plan.endKind !== KEM.END.NONE && P.ids.length > 1 && P.idx === P.ids.length - 1) kind = 'last';
+    }
+    if (!kind) { pop.hidden = true; return; }
+    const s = P.song();
+    UI.$('spTitle').textContent = kind === 'alarm' ? TEXT.STOP_POP_ALARM : TEXT.STOP_POP_LAST;
+    UI.$('spSong').textContent = s ? Util.stripExt(s.name) : '';
+    UI.$('spStop').textContent = TEXT.BTN_STOP_BIG;
+    pop.hidden = false;
+  },
   onPlayerChange_() {
     if (UI.tab !== 'play') { if (UI.tab === 'song') UI.renderGridNow_(); return; }
     if (UI.raf_) return;
@@ -232,7 +248,7 @@ const UI = {
     box.appendChild(UI.h('label', { class: 'lbl', text: Util.fill(TEXT.FORM_NAME, { n: KEM.NAME_MAX }) })); box.appendChild(name);
     box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_METHOD }));
     const ms = UI.h('div', { class: 'methods' });
-    KEM.METHOD_ORDER.forEach((m) => { const c = UI.h('button', { type: 'button', class: 'chip' + (f.method === m ? ' on' : ''), text: TEXT.METHOD_NAME[m] }); c.addEventListener('click', () => { f.method = m; UI.renderPlanForm_(); }); ms.appendChild(c); });
+    KEM.METHOD_ORDER.forEach((m) => { const c = UI.h('button', { type: 'button', class: 'chip' + (f.method === m ? ' on' : ''), text: TEXT.METHOD_NAME[m] }); c.addEventListener('click', () => { f.method = m; if (m === KEM.METHOD.TIMER && !f.endClock) f.endClock = '12:00'; UI.renderPlanForm_(); }); ms.appendChild(c); });
     box.appendChild(ms); box.appendChild(UI.h('p', { class: 'help', text: TEXT.METHOD_HELP[f.method] }));
     box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_TAGS + '（' + TEXT.TAGS_ALL_SONGS + '：選ばない）' }));
     box.appendChild(UI.chips_(tags, f.mainTagIds, (id) => { UI.toggleIn_(f.mainTagIds, id); UI.renderPlanForm_(); }));
@@ -241,10 +257,6 @@ const UI = {
     if (f.method === KEM.METHOD.PICK) { box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_COUNT + '（' + KEM.COUNT_MIN + '〜' + KEM.COUNT_MAX + '）' })); box.appendChild(num('count', KEM.COUNT_MIN, KEM.COUNT_MAX)); }
     if (f.method === KEM.METHOD.TIME || f.method === KEM.METHOD.TIMER) {
       if (f.method === KEM.METHOD.TIMER) {
-        box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_TIMER_MODE }));
-        box.appendChild(sel([['MIN', TEXT.MODE_MIN], ['CLOCK', TEXT.MODE_CLOCK]], f.endClock ? 'CLOCK' : 'MIN', (v) => { f.endClock = v === 'CLOCK' ? (f.endClock || '12:00') : ''; UI.renderPlanForm_(); }));
-      }
-      if (f.method === KEM.METHOD.TIMER && f.endClock) {
         box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_CLOCK }));
         const ti = UI.h('input', { type: 'time', id: 'endClock', value: f.endClock }); ti.addEventListener('input', () => { f.endClock = ti.value; });
         box.appendChild(ti);

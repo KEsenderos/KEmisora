@@ -1,4 +1,4 @@
-// KEmisora  util.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  util.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：小さな共通処理。
 
 const Util = {

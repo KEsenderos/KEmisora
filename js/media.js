@@ -1,4 +1,4 @@
-// KEmisora  media.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  media.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：無音のaudio要素、ロック画面・イヤホンのボタン（Media Session）、画面を消さない設定（Wake Lock）。
 
 const MediaCtl = {

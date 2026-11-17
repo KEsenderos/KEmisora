@@ -1,4 +1,4 @@
-// KEmisora  tags.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  tags.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：属性（タグ）の追加・名前の変更・削除・並び順。
 
 const Tags = {

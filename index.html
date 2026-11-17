@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- KEmisora  index.html  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md -->
+<!-- KEmisora  index.html  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md -->
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -106,6 +106,12 @@
     <div class="card"><h2 id="storageTitle" class="h2"></h2><div id="storageState" class="hint"></div></div>
   </section>
 </main>
+<div id="stopPop" class="stop-pop" role="alertdialog" aria-live="assertive" hidden>
+  <div class="sp-icon" aria-hidden="true">⏰</div>
+  <div id="spTitle" class="sp-title"></div>
+  <div id="spSong" class="sp-song"></div>
+  <button id="spStop" class="sp-btn" type="button"></button>
+</div>
 
 <nav class="tabbar" id="tabbar">
   <button type="button" data-tab="play" class="tab-btn on"></button>

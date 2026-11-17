@@ -1,4 +1,4 @@
-// KEmisora  plans.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
+// KEmisora  plans.js  版 0.1.5  基づく仕様書：KEmisora_仕様書_v0.1.5.md
 // 役割：編成（プレイリスト）の追加・直す・削除・並べ替えと、再生できるかの確認（要確認）。
 
 const Plans = {
@@ -19,7 +19,7 @@ const Plans = {
     const len = Util.charLen(String(p.name || '').trim());
     if (len < 1 || len > KEM.NAME_MAX) bad.push('NAME');
     if (p.method === KEM.METHOD.PICK && !(p.count >= KEM.COUNT_MIN && p.count <= KEM.COUNT_MAX && Number.isInteger(p.count))) bad.push('RANGE');
-    if (p.method === KEM.METHOD.TIMER && p.endClock) { if (Util.secondsUntilClock(p.endClock, 0) === null) bad.push('RANGE'); }
+    if (p.method === KEM.METHOD.TIMER) { if (Util.secondsUntilClock(p.endClock, 0) === null) bad.push('RANGE'); }   // 目覚まし：終了時刻が必須
     else if ((p.method === KEM.METHOD.TIME || p.method === KEM.METHOD.TIMER) &&
         !(p.durationMin >= KEM.PLAN_MIN_MIN && p.durationMin <= KEM.PLAN_MAX_MIN && Number.isInteger(p.durationMin))) bad.push('RANGE');
     return bad;
@@ -103,8 +103,8 @@ const Plans = {
   summary(p, tags) {
     let s = TEXT.METHOD_NAME[p.method];
     if (p.method === KEM.METHOD.PICK) s += ' ' + p.count + '曲';
-    if (p.method === KEM.METHOD.TIMER && p.endClock) s += ' ' + p.endClock + 'まで';
-    else if (p.method === KEM.METHOD.TIME || p.method === KEM.METHOD.TIMER) s += ' ' + p.durationMin + '分';
+    if (p.method === KEM.METHOD.TIMER) s += ' ' + (p.endClock || '--:--') + 'に終了';
+    else if (p.method === KEM.METHOD.TIME) s += ' ' + p.durationMin + '分';
     return Util.fill(TEXT.PLAN_SUMMARY, { method: s, cond: Plans.condText(p, tags) });
   }
 };
