@@ -1,4 +1,4 @@
-// KEmisora  session.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  session.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：編成から「再生する曲の順番」を決める（計算だけ。画面にも保存にも触れない）。
 
 const Session = {
@@ -36,6 +36,13 @@ const Session = {
       if (!res.inRange) out.note = 'OUT_OF_RANGE';
     } else if (plan.method === KEM.METHOD.TIMER) {
       out.timerSec = plan.durationMin * 60;
+      if (plan.endClock) {                       // 時刻で終わる：今から、その時刻までの秒数
+        const sec = Util.secondsUntilClock(plan.endClock);
+        if (sec === null) throw new KemError('BAD_RANGE');
+        if (sec < KEM.CLOCK_MIN_SEC) throw new KemError('CLOCK_PASSED', { t: plan.endClock });
+        if (sec > KEM.PLAN_MAX_MIN * 60) throw new KemError('CLOCK_FAR', { t: plan.endClock, min: Math.ceil(sec / 60), max: KEM.PLAN_MAX_MIN });
+        out.timerSec = sec; out.endAt = Date.now() + sec * 1000;
+      }
       out.infinite = true;
       const alarms = Session.endPool_(plan, songs);
       if (alarms.length) out.alarmId = alarms[Math.floor(r() * alarms.length)].songId;      // アラーム曲は始めに決める（途中で変わらない）

@@ -1,4 +1,4 @@
-/* KEmisora  style.css  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md */
+/* KEmisora  style.css  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md */
 /* 役割：見た目（暗い画面・青のアクセント）。色は :root の名前つきの色だけを使う */
 
 :root {
@@ -144,6 +144,21 @@ input[type="range"]:disabled { opacity: 0.4; }
 .tab-btn.on { color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
 
 .pressed { filter: brightness(0.8); transform: scale(0.97); }
+
+/* 1曲リピートのスイッチ（左右に動いてON／OFF） */
+.rep-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; min-height: 48px; }
+.rep-label { font-weight: 700; }
+.rep-state { font-size: 13px; color: var(--muted); flex: 1; }
+.switch { position: relative; display: inline-block; width: 60px; height: 34px; flex: none; }
+.switch input { opacity: 0; width: 100%; height: 100%; position: absolute; inset: 0; margin: 0; z-index: 2; cursor: pointer; }
+.switch .slider { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--line); border-radius: 34px; transition: background .15s; }
+.switch .slider::before { content: ''; position: absolute; left: 3px; top: 3px; width: 26px; height: 26px; border-radius: 50%; background: var(--muted); transition: transform .15s, background .15s; }
+.switch input:checked + .slider { background: var(--accent); border-color: var(--accent); }
+.switch input:checked + .slider::before { transform: translateX(26px); background: var(--on-accent); }
+.g-th.tap { cursor: pointer; }
+.g-th.active { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.g-head .g-name.tap { cursor: pointer; }
+.g-head .g-name.filtered { background: var(--accent); color: var(--on-accent); }
 
 /* 曲の行の色分け：属性が未設定＝黄、属性が2つ＝紫（色だけに頼らないよう、凡例の文も出す） */
 .g-row.unset .g-name { background: #4a3a0a; box-shadow: inset 4px 0 0 #FBBF24; }

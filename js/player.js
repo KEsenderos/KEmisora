@@ -1,4 +1,4 @@
-// KEmisora  player.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  player.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：再生の状態と操作の中心。編成の再生、次の曲の先読み、タイマー（切る位置の指示）、曲ごとの音程・速度。
 
 const Player = {
@@ -30,6 +30,14 @@ const Player = {
     return Math.max(0, (Player.cutFrame - Player.out) / Engine.sampleRate);
   },
 
+  // 時刻で終わるタイマー：読み込み・一時停止の間も時計は進むので、再生を始める（再開する）たびに、切る位置を「今から終了時刻まで」に合わせ直す
+  rebaseClock_() {
+    if (!Player.endAt || !Player.timerSec || Player.alarmActive) return;
+    const left = Math.max(0.05, (Player.endAt - Date.now()) / 1000);
+    Player.cutFrame = Player.out + KeCore.cutFrames(left, Engine.sampleRate);
+    Engine.cutAt(Player.cutFrame, KeCore.fadeFrames(KEM.TIMER_FADE_SEC, Engine.sampleRate));
+  },
+
   // ---------- 編成を始める ----------
   async startPlan(planId, autoplay) {
     const plan = Plans.find(planId);
@@ -37,20 +45,21 @@ const Player = {
     const bad = Plans.validate(plan, Library.getList(), Tags.getList());
     if (bad.length) { Player.say_(Util.fill(TEXT.ERR_PLAN_BAD, { why: bad.map(Plans.badText).join('、') }), 'error'); return; }
     Util.lsSet(KEM.LS.LAST_PLAN, planId);
-    const built = Session.build(plan, Library.getList());
+    let built;
+    try { built = Session.build(plan, Library.getList()); } catch (e) { Player.say_(UI.errorText(e), 'error'); return; }
     if (!built.ids.length) { Player.say_(Util.fill(TEXT.ERR_PLAN_BAD, { why: TEXT.BAD_NO_SONG }), 'error'); return; }
     await Player.begin_(plan, built, autoplay);
   },
 
   // この曲だけ再生（曲タブ）
-  async playOne(songId) {
-    await Player.begin_(null, { ids: [songId], alarmId: null, timerSec: 0, infinite: false }, true);
+  async playOne(songId, repeat) {
+    await Player.begin_(null, { ids: [songId], alarmId: null, timerSec: 0, infinite: false, repeatOne: !!repeat }, true);
   },
 
   async begin_(plan, built, autoplay) {
     Player.plan = plan; Player.ids = built.ids.slice(); Player.idx = -1;
     Player.alarmId = built.alarmId; Player.alarmActive = false; Player.alarmQueued = false; Player.nextQueued = false; Player.alarmBytes = 0;
-    Player.timerSec = built.timerSec; Player.out = 0; Player.finishedMsg = '';
+    Player.repeatOne = !!built.repeatOne; Player.timerSec = built.timerSec; Player.endAt = built.endAt || 0; Player.out = 0; Player.finishedMsg = '';
     try { await Engine.ensureContext_(); } catch (e) { Player.fail_(e); return; }
     Engine.resetOut(); Engine.dropNext();
     if (Player.timerSec) {
@@ -120,10 +129,11 @@ const Player = {
     }
     if (Player.state === KEM.STATE.STOPPED && Player.finishedMsg) {          // 最後まで終わっていた：同じ編成をもう一度
       if (Player.plan) { await Player.startPlan(Player.plan.planId, true); return; }
-      if (Player.songId) { await Player.playOne(Player.songId); return; }
+      if (Player.songId) { await Player.playOne(Player.songId, Player.repeatOne); return; }
     }
     try { await Engine.ensureRunning_(); } catch (e) { Player.fail_(e); return; }
     MediaCtl.startSilence();
+    Player.rebaseClock_();
     Engine.play();
     MediaCtl.acquireWake();
     Player.setState_(KEM.STATE.PLAYING);
@@ -170,6 +180,7 @@ const Player = {
 
   // REPEAT・TIMER：i 番目の曲がまだ無ければ、次の1周を足す
   async ensureMore_(i) {
+    if (Player.repeatOne && i >= Player.ids.length) { Player.ids = Player.ids.concat([Player.ids[Player.ids.length - 1]]); return; }   // 1曲リピート：同じ曲をもう1回
     const p = Player.plan;
     if (!p || i < Player.ids.length) return;
     if (p.method === KEM.METHOD.REPEAT || p.method === KEM.METHOD.TIMER) {
@@ -258,7 +269,7 @@ const Player = {
   // 曲が最後まで鳴った（先読みが間に合わなかった・最後の曲だった）
   async handleEnded_() {
     Engine.pause();
-    if (Player.alarmActive || !Player.plan) { Player.finish_(Player.alarmActive ? TEXT.TIMER_DONE : TEXT.PLAN_END); return; }
+    if (Player.alarmActive || (!Player.plan && !Player.repeatOne)) { Player.finish_(Player.alarmActive ? TEXT.TIMER_DONE : TEXT.PLAN_END); return; }
     await Player.ensureMore_(Player.idx + 1);
     if (Player.idx + 1 < Player.ids.length) { await Player.loadIndex_(Player.idx + 1, true); return; }
     Player.finish_(TEXT.PLAN_END);

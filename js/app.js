@@ -1,4 +1,4 @@
-// KEmisora  app.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  app.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：起動の順番、更新のお知らせ（ルールブック3-12）、前面に戻ったときの処理。
 
 const App = {

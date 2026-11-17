@@ -1,7 +1,7 @@
-// KEmisora  sw.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  sw.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：オフライン用のキャッシュ。新しい版は、更新ボタンが押されたときだけ切り替える（skipWaiting は install では呼ばない）。
 
-const CACHE_VERSION = 'kemisora-v0.1.2';
+const CACHE_VERSION = 'kemisora-v0.1.4';
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/config.js', 'js/util.js', 'js/kecore.js', 'js/store.js', 'js/engine.js', 'js/media.js',
   'js/library.js', 'js/tags.js', 'js/plans.js', 'js/planner.js', 'js/drive.js', 'js/sync.js',

@@ -1,4 +1,4 @@
-// KEmisora  ui.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  ui.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：画面の表示とボタンの受付（4つのタブ：再生・編成・曲・設定）。
 
 const UI = {
@@ -240,7 +240,17 @@ const UI = {
     box.appendChild(sel([['ANY', TEXT.MATCH_ANY], ['ALL', TEXT.MATCH_ALL]], f.mainMatch, (v) => { f.mainMatch = v; }));
     if (f.method === KEM.METHOD.PICK) { box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_COUNT + '（' + KEM.COUNT_MIN + '〜' + KEM.COUNT_MAX + '）' })); box.appendChild(num('count', KEM.COUNT_MIN, KEM.COUNT_MAX)); }
     if (f.method === KEM.METHOD.TIME || f.method === KEM.METHOD.TIMER) {
-      box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_MIN + '（' + KEM.PLAN_MIN_MIN + '〜' + KEM.PLAN_MAX_MIN + '）' })); box.appendChild(num('durationMin', KEM.PLAN_MIN_MIN, KEM.PLAN_MAX_MIN));
+      if (f.method === KEM.METHOD.TIMER) {
+        box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_TIMER_MODE }));
+        box.appendChild(sel([['MIN', TEXT.MODE_MIN], ['CLOCK', TEXT.MODE_CLOCK]], f.endClock ? 'CLOCK' : 'MIN', (v) => { f.endClock = v === 'CLOCK' ? (f.endClock || '12:00') : ''; UI.renderPlanForm_(); }));
+      }
+      if (f.method === KEM.METHOD.TIMER && f.endClock) {
+        box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_CLOCK }));
+        const ti = UI.h('input', { type: 'time', id: 'endClock', value: f.endClock }); ti.addEventListener('input', () => { f.endClock = ti.value; });
+        box.appendChild(ti);
+      } else {
+        box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_MIN + '（' + KEM.PLAN_MIN_MIN + '〜' + KEM.PLAN_MAX_MIN + '）' })); box.appendChild(num('durationMin', KEM.PLAN_MIN_MIN, KEM.PLAN_MAX_MIN));
+      }
       box.appendChild(UI.h('label', { class: 'lbl', text: TEXT.FORM_END }));
       box.appendChild(sel([['NONE', TEXT.END_NONE], ['TAGS', TEXT.END_TAGS], ['SONG', TEXT.END_SONG]], f.endKind, (v) => { f.endKind = v; UI.renderPlanForm_(); }));
       if (f.endKind === KEM.END.TAGS) {
@@ -264,12 +274,31 @@ const UI = {
   bindSong_() {
     UI.$('btnImport').addEventListener('click', () => UI.toggleImport_());
     UI.$('gridWrap').addEventListener('scroll', () => UI.scheduleGrid_());
+    UI.songFilter_ = null;
+    UI.$('repSwitch').checked = Util.lsGet(KEM.LS.REPEAT_ONE) === '1'; UI.paintRepeat_();
+    UI.$('repSwitch').addEventListener('change', () => { Util.lsSet(KEM.LS.REPEAT_ONE, UI.$('repSwitch').checked ? '1' : '0'); UI.paintRepeat_(); });
     UI.$('gridInner').addEventListener('click', (e) => {
+      const th = e.target.closest('[data-filter]');
+      if (th) { UI.setFilter_(th.dataset.filter || null); return; }
       const c = e.target.closest('[data-cell]'), n = e.target.closest('[data-play]'), d = e.target.closest('[data-del]');
       if (c) { const [sid, tid] = c.dataset.cell.split('\u0001'); UI.guard_(async () => { await Library.toggleTag(sid, tid); UI.renderGridRows_(); }); }
       else if (d) UI.deleteSong_(d);
-      else if (n) { UI.hideMessage(); UI.guard_(() => Player.playOne(n.dataset.play).then(() => UI.showTab('play'))); }
+      else if (n) { UI.hideMessage(); UI.guard_(() => Player.playOne(n.dataset.play, UI.$('repSwitch').checked).then(() => UI.showTab('play'))); }
     });
+  },
+
+  paintRepeat_() { UI.$('repLabel').textContent = TEXT.REPEAT_ONE; UI.$('repState').textContent = UI.$('repSwitch').checked ? TEXT.REPEAT_ONE_ON : TEXT.REPEAT_ONE_OFF; },
+
+  // 表に出す曲（属性で絞り込み中なら、その属性が付いた曲だけ）
+  gridSongs_() {
+    const all = Library.getList(), id = UI.songFilter_;
+    if (!id || !Tags.find(id)) { UI.songFilter_ = null; return all; }
+    return all.filter((s) => s.tagIds.indexOf(id) >= 0);
+  },
+  setFilter_(id) {
+    UI.songFilter_ = id || null;
+    UI.$('gridWrap').scrollTop = 0;
+    UI.renderSongs();
   },
 
   // 曲を端末から削除（2回押し。ドライブのファイルは消えない。再生中は不可）
@@ -322,18 +351,21 @@ const UI = {
     const songs = Library.getList();
     UI.$('songTitle').textContent = Util.fill(TEXT.SONGS_TITLE, { n: songs.length, max: KEM.LIBRARY_MAX });
     UI.$('songEmpty').hidden = songs.length > 0; UI.$('gridWrap').hidden = songs.length === 0; UI.$('gridHint').hidden = songs.length === 0;
+    const shown = UI.gridSongs_(), fi = UI.$('filterInfo');
+    fi.hidden = !UI.songFilter_;
+    if (UI.songFilter_) fi.textContent = shown.length ? Util.fill(TEXT.FILTER_ON, { name: Tags.nameOf(UI.songFilter_), n: shown.length }) : TEXT.FILTER_EMPTY;
     UI.renderGrid_();
   },
 
   renderGrid_() {
-    const tags = Tags.getList(), songs = Library.getList(), inner = UI.$('gridInner');
+    const tags = Tags.getList(), songs = UI.gridSongs_(), inner = UI.$('gridInner');
     const W = KEM.NAME_COL_W + tags.length * KEM.TAG_COL_W, H = 52 + songs.length * KEM.ROW_H;
     inner.style.width = Math.max(W, UI.$('gridWrap').clientWidth || 0) + 'px'; inner.style.height = H + 'px';
     UI.gridW_ = W;
     inner.textContent = '';
     const head = UI.h('div', { class: 'g-head', style: 'width:' + W + 'px' });
-    head.appendChild(UI.h('div', { class: 'g-name', style: 'width:' + KEM.NAME_COL_W + 'px' }, [UI.h('span', { text: '' })]));
-    tags.forEach((t) => head.appendChild(UI.h('div', { class: 'g-th', style: 'width:' + KEM.TAG_COL_W + 'px', text: t.name })));
+    head.appendChild(UI.h('div', { class: 'g-name tap' + (UI.songFilter_ ? ' filtered' : ''), 'data-filter': '', style: 'width:' + KEM.NAME_COL_W + 'px' }, [UI.h('span', { text: UI.songFilter_ ? '全曲に戻す' : '' })]));
+    tags.forEach((t) => head.appendChild(UI.h('div', { class: 'g-th tap' + (UI.songFilter_ === t.tagId ? ' active' : ''), 'data-filter': t.tagId, style: 'width:' + KEM.TAG_COL_W + 'px', text: t.name })));
     inner.appendChild(head);
     UI.gridRows_ = UI.h('div', { style: 'position:absolute;left:0;top:52px;width:' + W + 'px;height:' + (songs.length * KEM.ROW_H) + 'px' });
     inner.appendChild(UI.gridRows_);
@@ -345,7 +377,7 @@ const UI = {
   // 見えている行だけを描く（300曲でも軽い）
   renderGridRows_() {
     const box = UI.gridRows_; if (!box) return;
-    const wrap = UI.$('gridWrap'), songs = Library.getList(), tags = Tags.getList();
+    const wrap = UI.$('gridWrap'), songs = UI.gridSongs_(), tags = Tags.getList();
     const top = Math.max(0, wrap.scrollTop - 52), vh = wrap.clientHeight || 500;
     const a = Math.max(0, Math.floor(top / KEM.ROW_H) - 4), b = Math.min(songs.length, Math.ceil((top + vh) / KEM.ROW_H) + 4);
     box.textContent = '';

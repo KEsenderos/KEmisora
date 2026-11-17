@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- KEmisora  index.html  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md -->
+<!-- KEmisora  index.html  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md -->
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -75,6 +75,10 @@
   <!-- 曲 -->
   <section id="tab-song" class="tab" data-tab="song" hidden>
     <div class="list-head"><h2 id="songTitle" class="h2"></h2><button id="btnImport" class="btn-add" type="button"></button></div>
+    <div class="rep-row"><span id="repLabel" class="rep-label"></span>
+      <label class="switch"><input id="repSwitch" type="checkbox" role="switch"><span class="slider"></span></label>
+      <span id="repState" class="rep-state"></span></div>
+    <p id="filterInfo" class="legend" hidden></p>
     <p id="songLegend" class="legend"></p>
     <div id="importPanel" class="card" hidden></div>
     <p id="gridHint" class="hint"></p>

@@ -1,4 +1,4 @@
-// KEmisora  store.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  store.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：IndexedDB（songs・files・tags・plans・removed）の読み書き。
 
 const Store = {

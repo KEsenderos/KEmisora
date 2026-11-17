@@ -1,8 +1,8 @@
-// KEmisora  config.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  config.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：定数 KEM と表示文言 TEXT、エラーの種類 KemError。画面に出る文字はすべてここに置く。
 
 const KEM = {
-  APP_VERSION: '0.1.2',
+  APP_VERSION: '0.1.4',
   PITCH_MIN: -3, PITCH_MAX: 3, PITCH_STEP: 1, PITCH_DEFAULT: 0,
   SPEED_MIN: 0.5, SPEED_MAX: 1.5, SPEED_STEP: 0.05, SPEED_DEFAULT: 1.0,
   LIBRARY_MAX: 300,
@@ -26,6 +26,7 @@ const KEM = {
   METHOD: { ALL: 'ALL', PICK: 'PICK', REPEAT: 'REPEAT', TIME: 'TIME', TIMER: 'TIMER' },
   METHOD_ORDER: ['ALL', 'PICK', 'REPEAT', 'TIME', 'TIMER'],
   END: { NONE: 'NONE', TAGS: 'TAGS', SONG: 'SONG' },
+  CLOCK_MIN_SEC: 30,
   ACCEPT_TYPES: '.mp3,.m4a,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac',
   STORAGE_WARN_RATIO: 0.8,
   LS: {
@@ -33,6 +34,7 @@ const KEM = {
     PARENT_URL: 'kem_parentUrl', LAST_CHILD: 'kem_lastChildId', LAST_SYNC: 'kem_lastSyncAt',
     LAST_BACKUP: 'kem_lastBackupAt', PERSIST_ASKED: 'kem_persistAsked', LOADING: 'kem_loadingSongId',
     BASE_SAVED: 'kem_syncBaseSavedAt',
+    REPEAT_ONE: 'kem_repeatOne',
     SYNC_FOLDER: 'kem_syncFolderId', SYNC_FOLDER_URL: 'kem_syncFolderUrl'
   }
 };
@@ -57,7 +59,7 @@ const TEXT = {
     PICK: '条件に合う曲から、指定した数だけランダムに選んで再生します',
     REPEAT: '条件に合う曲を、ランダムな順で何周でも再生します',
     TIME: '指定した時間に近くなるように曲を組み、最後の曲で終わります',
-    TIMER: '指定した時間ちょうどに、曲の途中でも音を小さくしてアラームに切り替えます'
+    TIMER: '指定した時間（または終了時刻）ちょうどに、曲の途中でも音を小さくしてアラームに切り替えます'
   },
   MATCH_ANY: 'どれか1つ', MATCH_ALL: 'すべて',
   TAGS_ALL_SONGS: '属性を選ばない（全曲）',
@@ -79,7 +81,10 @@ const TEXT = {
   IMPORT_DONE: '取り込み済み', IMPORT_TODO: '未取り込み', IMPORT_PICK: '取り込む子フォルダを選んでください', IMPORT_FILES: '{name}（{n}曲）',
   SONG_NO_FILE: '（ファイルなし）',
   TAGS_TITLE: '属性（{n}/{max}）', TAGS_EMPTY: '属性がありません', TAG_ADD: '属性を追加', TAG_RENAME: '名前を直す',
-  GRID_HINT: 'マスをタップすると ON／OFF が切り替わります',
+  GRID_HINT: 'マスをタップすると ON／OFF が切り替わります。属性名をタップするとその曲だけ表示、左上の空白で全曲に戻ります',
+  REPEAT_ONE: '1曲リピート', REPEAT_ONE_ON: 'ON：曲名をタップすると、その曲をくり返します', REPEAT_ONE_OFF: 'OFF',
+  FILTER_ON: '絞り込み：{name}（{n}曲）　左上の空白で全曲に戻る',
+  FILTER_EMPTY: 'この属性が付いた曲はありません。左上の空白をタップすると全曲に戻ります',
   SET_DRIVE: 'ドライブの設定', SET_GAS_URL: '中継のURL', SET_KEY: '合言葉', SET_PARENT: '親フォルダのURL',
   BTN_SAVE_CONN: '接続を保存して確認', BTN_REG_PARENT: '親フォルダを登録',
   SET_SYNC: '同期', BTN_SYNC: '今すぐ同期', SET_BACKUP: 'バックアップ', BTN_EXPORT: '書き出す', BTN_IMPORT_FILE: '読み込む',
@@ -122,6 +127,9 @@ const TEXT = {
   ERR_QUOTA: 'iPhoneの空き容量が足りず、保存できませんでした',
   ERR_AUDIO: '音を出す準備ができませんでした。iOSを最新にしてから、もう一度開いてください',
   ERR_BAD_RESPONSE: '中継（GAS）から想定外の返事です。GASのURL（/exec で終わるもの）と、デプロイの「アクセスできるユーザー：全員」を確かめてください',
+  ERR_CLOCK_PASSED: '終了時刻 {t} は過ぎているか、もうすぐです。編成の時刻を直してください',
+  ERR_CLOCK_FAR: '終了時刻 {t} まであと{min}分あります。{max}分以内の時刻にしてください',
+  FORM_TIMER_MODE: '終わり方', MODE_MIN: '○分後に終わる', MODE_CLOCK: '○時○分に終わる（時刻アラーム）', FORM_CLOCK: '終了時刻（今日のこの時刻。再生を押したときに数えます）',
   ERR_NETWORK: '通信できませんでした。電波を確かめてください',
   ERR_BAD_KEY: '合言葉が違います',
   ERR_NO_PARENT: '親フォルダが登録されていません',

@@ -1,4 +1,4 @@
-// KEmisora  util.js  版 0.1.2  基づく仕様書：KEmisora_仕様書_v0.1.2.md
+// KEmisora  util.js  版 0.1.4  基づく仕様書：KEmisora_仕様書_v0.1.4.md
 // 役割：小さな共通処理。
 
 const Util = {
@@ -18,6 +18,14 @@ const Util = {
   newId(prefix) { return prefix + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); },
   lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
   lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+  // 今日の「HH:MM」までの秒数（過ぎていれば負の数）。形が正しくなければ null
+  secondsUntilClock(hhmm, now) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || ''));
+    if (!m || Number(m[1]) > 23 || Number(m[2]) > 59) return null;
+    const d = new Date(now == null ? Date.now() : now);
+    const t = new Date(d.getFullYear(), d.getMonth(), d.getDate(), Number(m[1]), Number(m[2]), 0, 0).getTime();
+    return (t - d.getTime()) / 1000;
+  },
   lsRemove(k) { try { localStorage.removeItem(k); } catch (e) { /* 何もしない */ } },
   charLen(s) { return Array.from(String(s)).length; },
   // 親フォルダのURL（またはID）からフォルダIDを取り出す。取り出せなければ ''
