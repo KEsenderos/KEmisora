@@ -1,4 +1,4 @@
-// KEmisora  ui.js  版 0.1.7  基づく仕様書：KEmisora_仕様書_v0.1.7.md
+// KEmisora  ui.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
 // 役割：画面の表示とボタンの受付（4つのタブ：再生・編成・曲・設定）。
 
 const UI = {

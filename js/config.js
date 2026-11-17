@@ -1,8 +1,8 @@
-// KEmisora  config.js  版 0.1.7  基づく仕様書：KEmisora_仕様書_v0.1.7.md
+// KEmisora  config.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
 // 役割：定数 KEM と表示文言 TEXT、エラーの種類 KemError。画面に出る文字はすべてここに置く。
 
 const KEM = {
-  APP_VERSION: '0.1.7',
+  APP_VERSION: '0.1.8',
   PITCH_MIN: -3, PITCH_MAX: 3, PITCH_STEP: 1, PITCH_DEFAULT: 0,
   SPEED_MIN: 0.5, SPEED_MAX: 1.5, SPEED_STEP: 0.05, SPEED_DEFAULT: 1.0,
   LIBRARY_MAX: 300,

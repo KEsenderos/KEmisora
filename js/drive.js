@@ -1,4 +1,4 @@
-// KEmisora  drive.js  版 0.1.7  基づく仕様書：KEmisora_仕様書_v0.1.7.md
+// KEmisora  drive.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
 // 役割：中継（GAS）との通信。GETは使わず、合言葉つきのPOSTだけ。
 
 const Drive = {
