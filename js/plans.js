@@ -1,4 +1,4 @@
-// KEmisora  plans.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
+// KEmisora  plans.js  版 0.1.9  基づく仕様書：KEmisora_仕様書_v0.1.9.md
 // 役割：編成（プレイリスト）の追加・直す・削除・並べ替えと、再生できるかの確認（要確認）。
 
 const Plans = {

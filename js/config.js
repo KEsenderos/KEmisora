@@ -1,8 +1,8 @@
-// KEmisora  config.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
+// KEmisora  config.js  版 0.1.9  基づく仕様書：KEmisora_仕様書_v0.1.9.md
 // 役割：定数 KEM と表示文言 TEXT、エラーの種類 KemError。画面に出る文字はすべてここに置く。
 
 const KEM = {
-  APP_VERSION: '0.1.8',
+  APP_VERSION: '0.1.9',
   PITCH_MIN: -3, PITCH_MAX: 3, PITCH_STEP: 1, PITCH_DEFAULT: 0,
   SPEED_MIN: 0.5, SPEED_MAX: 1.5, SPEED_STEP: 0.05, SPEED_DEFAULT: 1.0,
   LIBRARY_MAX: 300,
@@ -34,7 +34,7 @@ const KEM = {
     PARENT_URL: 'kem_parentUrl', LAST_CHILD: 'kem_lastChildId', LAST_SYNC: 'kem_lastSyncAt',
     LAST_BACKUP: 'kem_lastBackupAt', PERSIST_ASKED: 'kem_persistAsked', LOADING: 'kem_loadingSongId',
     BASE_SAVED: 'kem_syncBaseSavedAt',
-    REPEAT_ONE: 'kem_repeatOne',
+    REPEAT_ONE: 'kem_repeatOne', SONG_SORT: 'kem_songSort',
     SYNC_FOLDER: 'kem_syncFolderId', SYNC_FOLDER_URL: 'kem_syncFolderUrl'
   }
 };
@@ -84,8 +84,8 @@ const TEXT = {
   TAGS_TITLE: '属性（{n}/{max}）', TAGS_EMPTY: '属性がありません', TAG_ADD: '属性を追加', TAG_RENAME: '名前を直す',
   GRID_HINT: 'マスをタップすると ON／OFF が切り替わります。属性名をタップするとその曲だけ表示、左上の空白で全曲に戻ります',
   REPEAT_ONE: '1曲リピート', REPEAT_ONE_ON: 'ON：曲名をタップすると、その曲をくり返します', REPEAT_ONE_OFF: 'OFF',
-  FILTER_ON: '絞り込み：{name}（{n}曲）　左上の空白で全曲に戻る',
-  FILTER_EMPTY: 'この属性が付いた曲はありません。左上の空白をタップすると全曲に戻ります',
+  FILTER_ON: '絞り込み：{name}（{n}曲）　同じ属性をもう一度タップすると全曲に戻る',
+  FILTER_EMPTY: 'この属性が付いた曲はありません。同じ属性をもう一度タップすると全曲に戻ります',
   SET_DRIVE: 'ドライブの設定', SET_GAS_URL: '中継のURL', SET_KEY: '合言葉', SET_PARENT: '親フォルダのURL',
   BTN_SAVE_CONN: '接続を保存して確認', BTN_REG_PARENT: '親フォルダを登録',
   SET_SYNC: '同期', BTN_SYNC: '今すぐ同期', SET_BACKUP: 'バックアップ', BTN_EXPORT: '書き出す', BTN_IMPORT_FILE: '読み込む',
@@ -100,7 +100,8 @@ const TEXT = {
   INFO_PLAN_SAVED: '編成を保存しました',
   SET_SYNC_PLACE: '同期ファイルの置き場所（フォルダのURL。空欄＝親フォルダ）', BTN_SYNC_PLACE: '置き場所を保存',
   INFO_SYNC_PLACE_SET: '同期ファイルの置き場所を保存しました：', INFO_SYNC_PLACE_PARENT: '同期ファイルの置き場所は親フォルダです',
-  LEGEND_SONGS: '色：黄＝属性が未設定／紫＝属性が2つ　（新しく取り込んだ曲が上）',
+  LEGEND_SONGS: '色：黄＝属性が未設定／紫＝属性が2つ　（左上をタップすると、並び順が切り替わる）',
+  SORT_NAME: '名前順', SORT_ADDED: '登録順',
   INFO_ADDED: '{n}曲を追加しました',
   INFO_PICK_SHORT: '条件に合う曲が{n}曲だけでした',
   INFO_OUT_OF_RANGE: '指定した時間の範囲に収まらない見込みです（最も近い曲順にしました）',

@@ -1,4 +1,4 @@
-// KEmisora  player.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
+// KEmisora  player.js  版 0.1.9  基づく仕様書：KEmisora_仕様書_v0.1.9.md
 // 役割：再生の状態と操作の中心。編成の再生、次の曲の先読み、タイマー（切る位置の指示）、曲ごとの音程・速度。
 
 const Player = {

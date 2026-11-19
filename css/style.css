@@ -1,4 +1,4 @@
-/* KEmisora  style.css  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md */
+/* KEmisora  style.css  版 0.1.9  基づく仕様書：KEmisora_仕様書_v0.1.9.md */
 /* 役割：見た目（暗い画面・青のアクセント）。色は :root の名前つきの色だけを使う */
 
 :root {
@@ -158,7 +158,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .g-th.tap { cursor: pointer; }
 .g-th.active { background: var(--accent); color: var(--on-accent); font-weight: 700; }
 .g-head .g-name.tap { cursor: pointer; }
-.g-head .g-name.filtered { background: var(--accent); color: var(--on-accent); }
+.g-head .g-name.sort-btn { font-weight: 700; color: var(--accent); }
 
 /* 曲の行の色分け：属性が未設定＝黄、属性が2つ＝紫（色だけに頼らないよう、凡例の文も出す） */
 .g-row.unset .g-name { background: #4a3a0a; box-shadow: inset 4px 0 0 #FBBF24; }

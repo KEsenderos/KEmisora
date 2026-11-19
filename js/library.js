@@ -1,4 +1,4 @@
-// KEmisora  library.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
+// KEmisora  library.js  版 0.1.9  基づく仕様書：KEmisora_仕様書_v0.1.9.md
 // 役割：曲の一覧（手元の写し）。取り込み、属性のON/OFF、曲ごとの音程・速度の保存、削除。
 //       all＝記録すべて（ファイルを消した曲の設定も残す。FR-03）、songs＝この端末にファイルがある曲（画面に出す曲）。
 

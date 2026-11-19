@@ -1,4 +1,4 @@
-// KEmisora  ui.js  版 0.1.8  基づく仕様書：KEmisora_仕様書_v0.1.8.md
+// KEmisora  ui.js  版 0.1.9  基づく仕様書：KEmisora_仕様書_v0.1.9.md
 // 役割：画面の表示とボタンの受付（4つのタブ：再生・編成・曲・設定）。
 
 const UI = {
@@ -287,11 +287,12 @@ const UI = {
     UI.$('btnImport').addEventListener('click', () => UI.toggleImport_());
     UI.$('gridWrap').addEventListener('scroll', () => UI.scheduleGrid_());
     UI.songFilter_ = null;
+    UI.songSort_ = Util.lsGet(KEM.LS.SONG_SORT) === 'name' ? 'name' : 'added';
     UI.$('repSwitch').checked = Util.lsGet(KEM.LS.REPEAT_ONE) === '1'; UI.paintRepeat_();
     UI.$('repSwitch').addEventListener('change', () => { Util.lsSet(KEM.LS.REPEAT_ONE, UI.$('repSwitch').checked ? '1' : '0'); UI.paintRepeat_(); });
     UI.$('gridInner').addEventListener('click', (e) => {
-      const th = e.target.closest('[data-filter]');
-      if (th) { UI.setFilter_(th.dataset.filter || null); return; }
+      const th = e.target.closest('[data-filter],[data-sort]');
+      if (th) { if (th.dataset.sort) UI.setSort_(UI.songSort_ === 'name' ? 'added' : 'name'); else UI.setFilter_(UI.songFilter_ === th.dataset.filter ? null : th.dataset.filter); return; }
       const c = e.target.closest('[data-cell]'), n = e.target.closest('[data-play]'), d = e.target.closest('[data-del]');
       if (c) { const [sid, tid] = c.dataset.cell.split('\u0001'); UI.guard_(async () => { await Library.toggleTag(sid, tid); UI.renderGridRows_(); }); }
       else if (d) UI.deleteSong_(d);
@@ -303,9 +304,18 @@ const UI = {
 
   // 表に出す曲（属性で絞り込み中なら、その属性が付いた曲だけ）
   gridSongs_() {
-    const all = Library.getList(), id = UI.songFilter_;
-    if (!id || !Tags.find(id)) { UI.songFilter_ = null; return all; }
-    return all.filter((s) => s.tagIds.indexOf(id) >= 0);
+    const id = UI.songFilter_;
+    let list = Library.getList();
+    if (id && !Tags.find(id)) UI.songFilter_ = null;
+    else if (id) list = list.filter((s) => s.tagIds.indexOf(id) >= 0);
+    if (UI.songSort_ === 'name') list = list.slice().sort((a, b) => a.name.localeCompare(b.name, 'ja') || (b.addedAt - a.addedAt));
+    return list;   // 登録順は Library.getList() のまま（新しく取り込んだ曲が上）
+  },
+  setSort_(mode) {
+    UI.songSort_ = mode === 'name' ? 'name' : 'added';
+    Util.lsSet(KEM.LS.SONG_SORT, UI.songSort_);
+    UI.$('gridWrap').scrollTop = 0;
+    UI.renderSongs();
   },
   setFilter_(id) {
     UI.songFilter_ = id || null;
@@ -376,7 +386,7 @@ const UI = {
     UI.gridW_ = W;
     inner.textContent = '';
     const head = UI.h('div', { class: 'g-head', style: 'width:' + W + 'px' });
-    head.appendChild(UI.h('div', { class: 'g-name tap' + (UI.songFilter_ ? ' filtered' : ''), 'data-filter': '', style: 'width:' + KEM.NAME_COL_W + 'px' }, [UI.h('span', { text: UI.songFilter_ ? '全曲に戻す' : '' })]));
+    head.appendChild(UI.h('div', { class: 'g-name tap sort-btn', 'data-sort': '1', role: 'button', style: 'width:' + KEM.NAME_COL_W + 'px' }, [UI.h('span', { text: '並び：' + (UI.songSort_ === 'name' ? TEXT.SORT_NAME : TEXT.SORT_ADDED) + ' ⇅' })]));
     tags.forEach((t) => head.appendChild(UI.h('div', { class: 'g-th tap' + (UI.songFilter_ === t.tagId ? ' active' : ''), 'data-filter': t.tagId, style: 'width:' + KEM.TAG_COL_W + 'px', text: t.name })));
     inner.appendChild(head);
     UI.gridRows_ = UI.h('div', { style: 'position:absolute;left:0;top:52px;width:' + W + 'px;height:' + (songs.length * KEM.ROW_H) + 'px' });
